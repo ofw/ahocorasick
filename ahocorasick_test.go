@@ -1,7 +1,6 @@
 package ahocorasick
 
 import (
-	"math/rand"
 	"testing"
 	"sync"
 	"github.com/stretchr/testify/require"
@@ -85,22 +84,6 @@ func Test3(t *testing.T) {
 	}
 }
 
-func Benchmark1(b *testing.B) {
-	ac := NewMatcher()
-
-	dictionary := make([]string, 0)
-	for i := 0; i < 200000; i++ {
-		dictionary = append(dictionary, randWord(2, 6))
-	}
-	ac.Build(dictionary)
-
-	for i := 0; i < b.N; i++ {
-		ret := ac.Match(randWord(5000, 10000))
-		if len(ret) > 0 {
-		}
-	}
-}
-
 func TestConcurrent(t *testing.T) {
 	ac := NewMatcher()
 	ac.Build([]string{"foo", "bar", "baz"})
@@ -115,30 +98,22 @@ func TestConcurrent(t *testing.T) {
 	wg.Wait()
 }
 
-func Benchmark2(b *testing.B) {
+func Benchmark1(b *testing.B) {
+
 	ac := NewMatcher()
+	ac.Build([]string{"foo", "bar", "baz"})
 
-	dictionary := make([]string, 0)
-	for i := 0; i < 200000; i++ {
-		dictionary = append(dictionary, randWord(2, 6))
-	}
-	ac.Build(dictionary)
-
+	b.ResetTimer()
+	b.ReportAllocs()
 	for i := 0; i < b.N; i++ {
-		if ac.GetMatchResultSize(randWord(5000, 10000)) > 0 {
-		}
+		ac.Match("fooasldkjflaksjbarsdfasdfbazasdfdf")
 	}
 }
 
-func randWord(m, n int) string {
-	num := rand.Intn(n-m) + m
-	var s string
-	var a rune = 'a'
-
-	for i := 0; i < num; i++ {
-		c := a + rune(rand.Intn(26))
-		s = s + string(c)
-	}
-
-	return s
-}
+//func Benchmark2(b *testing.B) {
+//	ac := ahocorasick.NewStringMatcher([]string{"foo", "bar", "baz"})
+//	b.ResetTimer()
+//	for i := 0; i < b.N; i++ {
+//		ac.Match([]byte("fooasldkjflaksjbarsdfasdfbazasdfdf"))
+//	}
+//}
