@@ -7,7 +7,7 @@ import (
 type trieNode struct {
 	count int
 	fail  *trieNode
-	child map[rune]*trieNode
+	child [256]*trieNode
 	index int
 }
 
@@ -15,7 +15,7 @@ func newTrieNode() *trieNode {
 	return &trieNode{
 		count: 0,
 		fail:  nil,
-		child: make(map[rune]*trieNode),
+		child: [256]*trieNode{},
 		index: -1,
 	}
 }
@@ -34,7 +34,7 @@ func NewMatcher() *Matcher {
 
 // initialize the ahocorasick
 func (this *Matcher) Build(dictionary []string) {
-	for i, _ := range dictionary {
+	for i := range dictionary {
 		this.insert(dictionary[i])
 	}
 	this.build()
@@ -49,7 +49,7 @@ func (this *Matcher) Match(s string) []int {
 
 	ret := make([]int, 0)
 
-	for _, v := range s {
+	for _, v := range []byte(s) {
 		for curNode.child[v] == nil && curNode != this.root {
 			curNode = curNode.fail
 		}
@@ -84,6 +84,10 @@ func (this *Matcher) build() {
 		var p *trieNode = nil
 
 		for i, v := range temp.child {
+			if v == nil {
+				continue
+			}
+
 			if temp == this.root {
 				v.fail = this.root
 			} else {
@@ -106,7 +110,7 @@ func (this *Matcher) build() {
 
 func (this *Matcher) insert(s string) {
 	curNode := this.root
-	for _, v := range s {
+	for _, v := range []byte(s) {
 		if curNode.child[v] == nil {
 			curNode.child[v] = newTrieNode()
 		}
