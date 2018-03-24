@@ -23,14 +23,12 @@ func newTrieNode() *trieNode {
 type Matcher struct {
 	root *trieNode
 	size int
-	mark []bool
 }
 
 func NewMatcher() *Matcher {
 	return &Matcher{
 		root: newTrieNode(),
 		size: 0,
-		mark: make([]bool, 0),
 	}
 }
 
@@ -40,14 +38,13 @@ func (this *Matcher) Build(dictionary []string) {
 		this.insert(dictionary[i])
 	}
 	this.build()
-	this.mark = make([]bool, this.size)
 }
 
 // string match search
 // return all strings matched as indexes into the original dictionary
 func (this *Matcher) Match(s string) []int {
 	curNode := this.root
-	this.resetMark()
+	mark := make([]bool, this.size)
 	var p *trieNode = nil
 
 	ret := make([]int, 0)
@@ -62,8 +59,8 @@ func (this *Matcher) Match(s string) []int {
 		}
 
 		p = curNode
-		for p != this.root && p.count > 0 && !this.mark[p.index] {
-			this.mark[p.index] = true
+		for p != this.root && p.count > 0 && !mark[p.index] {
+			mark[p.index] = true
 			for i := 0; i < p.count; i++ {
 				ret = append(ret, p.index)
 			}
@@ -76,31 +73,7 @@ func (this *Matcher) Match(s string) []int {
 
 // just return the number of len(Match(s))
 func (this *Matcher) GetMatchResultSize(s string) int {
-
-	curNode := this.root
-	this.resetMark()
-	var p *trieNode = nil
-
-	num := 0
-
-	for _, v := range s {
-		for curNode.child[v] == nil && curNode != this.root {
-			curNode = curNode.fail
-		}
-		curNode = curNode.child[v]
-		if curNode == nil {
-			curNode = this.root
-		}
-
-		p = curNode
-		for p != this.root && p.count > 0 && !this.mark[p.index] {
-			this.mark[p.index] = true
-			num += p.count
-			p = p.fail
-		}
-	}
-
-	return num
+	return len(this.Match(s))
 }
 
 func (this *Matcher) build() {
@@ -144,8 +117,3 @@ func (this *Matcher) insert(s string) {
 	this.size++
 }
 
-func (this *Matcher) resetMark() {
-	for i := 0; i < this.size; i++ {
-		this.mark[i] = false
-	}
-}

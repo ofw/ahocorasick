@@ -3,6 +3,8 @@ package ahocorasick
 import (
 	"math/rand"
 	"testing"
+	"sync"
+	"github.com/stretchr/testify/require"
 )
 
 func Test1(t *testing.T) {
@@ -97,6 +99,20 @@ func Benchmark1(b *testing.B) {
 		if len(ret) > 0 {
 		}
 	}
+}
+
+func TestConcurrent(t *testing.T) {
+	ac := NewMatcher()
+	ac.Build([]string{"foo", "bar", "baz"})
+	wg := new(sync.WaitGroup)
+	for i := 0; i < 10; i++ {
+		wg.Add(1)
+		go func(){
+			defer wg.Done()
+			require.Equal(t, []int{0, 1, 2}, ac.Match("foobarbaz"))
+		}()
+	}
+	wg.Wait()
 }
 
 func Benchmark2(b *testing.B) {
