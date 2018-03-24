@@ -47,7 +47,7 @@ func (this *Matcher) Match(s string) []int {
 	mark := make([]bool, this.size)
 	var p *trieNode = nil
 
-	ret := make([]int, 0)
+	ret := make([]int, 0, this.size)
 
 	for _, v := range []byte(s) {
 		for curNode.child[v] == nil && curNode != this.root {

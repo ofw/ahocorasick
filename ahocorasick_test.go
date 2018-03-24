@@ -104,10 +104,10 @@ func Benchmark1(b *testing.B) {
 	ac.Build([]string{"foo", "bar", "baz"})
 
 	b.ResetTimer()
-	b.ReportAllocs()
 	for i := 0; i < b.N; i++ {
 		ac.Match("fooasldkjflaksjbarsdfasdfbazasdfdf")
 	}
+	b.ReportAllocs()
 }
 
 //func Benchmark2(b *testing.B) {
