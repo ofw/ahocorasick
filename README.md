@@ -1,6 +1,12 @@
-##ahocorasick
+## ⚡ Aho-Corasick Pattern Matching Algorithm ⚡
 
-Aho-Corasick string matching algorithm for golang
+Aho-Corasick string matching algorithm for golang.
+
+This if a fork of original https://github.com/gansidui/ahocorasick library which is not updated since 2014.
+
+Key improvements:
+* Thread safety for multiple calls to `Match` method 🌪️
+* Perfomance optimizations 🏎
 
 
 ~~~ go
@@ -8,7 +14,7 @@ package main
 
 import (
 	"fmt"
-	"github.com/gansidui/ahocorasick"
+	"github.com/ofw/ahocorasick"
 )
 
 func main() {
@@ -28,6 +34,6 @@ func main() {
 
 ~~~
 
-##LICENSE
+## License
 
 MIT
