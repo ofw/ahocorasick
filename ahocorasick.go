@@ -2,27 +2,44 @@ package ahocorasick
 
 import (
 	"container/list"
+	"log"
+	"unsafe"
 )
 
 type trieNode struct {
-	count int
+	count uint32
 	fail  *trieNode
-	child map[rune]*trieNode
-	index int
+	child [256]*trieNode
+	index uint32
+}
+
+func (t *trieNode) print(offset int) {
+
+	id := (uintptr)(unsafe.Pointer(t))
+	prefix := ""
+	for i := 0; i < offset; i++ {
+		prefix += "\t"
+	}
+	log.Printf("%s[Node] %q count: %v index: %v", prefix, id, t.count, t.index)
+	for _, c := range t.child {
+		log.Printf("%schild", prefix)
+		c.print(offset + 1)
+	}
+	log.Printf("%sfail: %v", prefix, (uintptr)(unsafe.Pointer(t.fail)))
 }
 
 func newTrieNode() *trieNode {
 	return &trieNode{
 		count: 0,
 		fail:  nil,
-		child: make(map[rune]*trieNode),
-		index: -1,
+		child: [256]*trieNode{},
+		index: 0,
 	}
 }
 
 type Matcher struct {
 	root *trieNode
-	size int
+	size uint32
 }
 
 func NewMatcher() *Matcher {
@@ -34,7 +51,7 @@ func NewMatcher() *Matcher {
 
 // initialize the ahocorasick
 func (this *Matcher) Build(dictionary []string) {
-	for i, _ := range dictionary {
+	for i := range dictionary {
 		this.insert(dictionary[i])
 	}
 	this.build()
@@ -42,14 +59,14 @@ func (this *Matcher) Build(dictionary []string) {
 
 // string match search
 // return all strings matched as indexes into the original dictionary
-func (this *Matcher) Match(s string) []int {
+func (this *Matcher) Match(s string) []uint32 {
 	curNode := this.root
 	mark := make([]bool, this.size)
 	var p *trieNode = nil
 
-	ret := make([]int, 0)
+	ret := make([]uint32, 0, this.size)
 
-	for _, v := range s {
+	for _, v := range []byte(s) {
 		for curNode.child[v] == nil && curNode != this.root {
 			curNode = curNode.fail
 		}
@@ -59,10 +76,12 @@ func (this *Matcher) Match(s string) []int {
 		}
 
 		p = curNode
-		for p != this.root && p.count > 0 && !mark[p.index] {
-			mark[p.index] = true
-			for i := 0; i < p.count; i++ {
-				ret = append(ret, p.index)
+		for p != this.root {
+			if p.count > 0 && !mark[p.index] {
+				mark[p.index] = true
+				for i := uint32(0); i < p.count; i++ {
+					ret = append(ret, p.index)
+				}
 			}
 			p = p.fail
 		}
@@ -84,6 +103,10 @@ func (this *Matcher) build() {
 		var p *trieNode = nil
 
 		for i, v := range temp.child {
+			if v == nil {
+				continue
+			}
+
 			if temp == this.root {
 				v.fail = this.root
 			} else {
@@ -106,7 +129,7 @@ func (this *Matcher) build() {
 
 func (this *Matcher) insert(s string) {
 	curNode := this.root
-	for _, v := range s {
+	for _, v := range []byte(s) {
 		if curNode.child[v] == nil {
 			curNode.child[v] = newTrieNode()
 		}
@@ -116,4 +139,3 @@ func (this *Matcher) insert(s string) {
 	curNode.index = this.size
 	this.size++
 }
-

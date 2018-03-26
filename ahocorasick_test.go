@@ -1,10 +1,11 @@
 package ahocorasick
 
 import (
-	"testing"
-	"sync"
-	"github.com/stretchr/testify/require"
 	"fmt"
+	"sync"
+	"testing"
+
+	"github.com/stretchr/testify/require"
 )
 
 var assert = require.True
@@ -93,7 +94,7 @@ func TestConcurrent(t *testing.T) {
 	wg := new(sync.WaitGroup)
 	for i := 0; i < 10; i++ {
 		wg.Add(1)
-		go func(){
+		go func() {
 			defer wg.Done()
 			require.Equal(t, []uint32{0, 1, 2}, ac.Match("foobфrbaz"))
 		}()
@@ -120,7 +121,6 @@ func Benchmark1(b *testing.B) {
 //		ac.Match([]byte("fooasldkjflaksjbarsdfasdfbazasdfdf"))
 //	}
 //}
-
 
 func TestNoPatterns(t *testing.T) {
 	m := NewMatcher()
@@ -164,9 +164,9 @@ func TestInterior(t *testing.T) {
 	hits := m.Match(string("The Man Of Steel: Superman"))
 	fmt.Println(hits)
 	assert(t, len(hits) == 3)
-	assert(t, hits[2] == 0)
-	assert(t, hits[1] == 1)
 	assert(t, hits[0] == 2)
+	assert(t, hits[1] == 1)
+	assert(t, hits[2] == 0)
 }
 
 func TestMatchAtStart(t *testing.T) {
@@ -236,7 +236,6 @@ func TestWikipedia(t *testing.T) {
 	assert(t, hits[3] == 4)
 
 	hits = m.Match(string("bccab"))
-	fmt.Println(hits)
 	assert(t, len(hits) == 4)
 	assert(t, hits[0] == 2)
 	assert(t, hits[1] == 4)
@@ -277,4 +276,3 @@ func TestMatch(t *testing.T) {
 	hits = m.Match(string("Mazilla/5.0 (Moc; Intel Computer OS X 10_7_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/30.0.1599.101 Sofari/537.36"))
 	assert(t, len(hits) == 0)
 }
-
