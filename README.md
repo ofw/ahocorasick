@@ -6,7 +6,8 @@ This if a fork of original https://github.com/gansidui/ahocorasick library which
 
 Key improvements:
 * Thread safety for multiple calls to `Match` method 🌪️
-* Perfomance optimizations 🏎
+* Perfomance optimizations (about 5x speed and reduced allocations) 🏎
+* Fixed incorrect results with some test cases
 
 
 ~~~ go
