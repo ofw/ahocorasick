@@ -92,7 +92,7 @@ func TestConcurrent(t *testing.T) {
 		wg.Add(1)
 		go func(){
 			defer wg.Done()
-			require.Equal(t, []int{0, 1, 2}, ac.Match("foobarbaz"))
+			require.Equal(t, []uint32{0, 1, 2}, ac.Match("foobarbaz"))
 		}()
 	}
 	wg.Wait()

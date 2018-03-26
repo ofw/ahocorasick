@@ -5,10 +5,10 @@ import (
 )
 
 type trieNode struct {
-	count int
+	count uint32
 	fail  *trieNode
 	child [256]*trieNode
-	index int
+	index uint32
 }
 
 func newTrieNode() *trieNode {
@@ -16,13 +16,13 @@ func newTrieNode() *trieNode {
 		count: 0,
 		fail:  nil,
 		child: [256]*trieNode{},
-		index: -1,
+		index: 0,
 	}
 }
 
 type Matcher struct {
 	root *trieNode
-	size int
+	size uint32
 }
 
 func NewMatcher() *Matcher {
@@ -42,12 +42,12 @@ func (this *Matcher) Build(dictionary []string) {
 
 // string match search
 // return all strings matched as indexes into the original dictionary
-func (this *Matcher) Match(s string) []int {
+func (this *Matcher) Match(s string) []uint32 {
 	curNode := this.root
 	mark := make([]bool, this.size)
 	var p *trieNode = nil
 
-	ret := make([]int, 0, this.size)
+	ret := make([]uint32, 0, this.size)
 
 	for _, v := range []byte(s) {
 		for curNode.child[v] == nil && curNode != this.root {
@@ -61,7 +61,7 @@ func (this *Matcher) Match(s string) []int {
 		p = curNode
 		for p != this.root && p.count > 0 && !mark[p.index] {
 			mark[p.index] = true
-			for i := 0; i < p.count; i++ {
+			for i := uint32(0); i < p.count; i++ {
 				ret = append(ret, p.index)
 			}
 			p = p.fail
