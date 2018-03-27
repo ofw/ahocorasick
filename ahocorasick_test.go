@@ -102,7 +102,7 @@ func TestConcurrent(t *testing.T) {
 	wg.Wait()
 }
 
-func Benchmark1(b *testing.B) {
+func BenchmarkOfw(b *testing.B) {
 
 	ac := NewMatcher()
 	ac.Build([]string{"foo", "bar", "baz"})
@@ -114,7 +114,7 @@ func Benchmark1(b *testing.B) {
 	b.ReportAllocs()
 }
 
-//func Benchmark2(b *testing.B) {
+//func BenchmarkCloudflare(b *testing.B) {
 //	ac := ahocorasick.NewStringMatcher([]string{"foo", "bar", "baz"})
 //	b.ResetTimer()
 //	for i := 0; i < b.N; i++ {
